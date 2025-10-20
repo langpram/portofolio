@@ -8,9 +8,8 @@ import {
   Lock,
   X,
   Check,
-  ExternalLink,
-  Github,
   Globe,
+  Github,
   Calendar,
 } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -49,7 +48,8 @@ export default function ProjectPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [uploading, setUploading] = useState<boolean>(false);
-
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -61,14 +61,19 @@ export default function ProjectPage() {
     status: "In Progress",
   });
 
-  const ADMIN_PASSWORD =
-    process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "default_password";
+  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "default_password";
 
-  // Fetch projects
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      console.log("Mengambil data projects dari Firestore...");
       const projectsCollection = collection(db, "projects");
       const q = query(projectsCollection, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
@@ -76,11 +81,9 @@ export default function ProjectPage() {
         id: doc.id,
         ...doc.data(),
       })) as Project[];
-
-      console.log("Data projects:", data);
       setProjects(data);
     } catch (error: any) {
-      console.error("Gagal mengambil projects:", error.message, error.code);
+      console.error("Gagal mengambil projects:", error.message);
       alert("Gagal memuat projects. Cek koneksi atau Firebase config.");
     } finally {
       setLoading(false);
@@ -88,12 +91,10 @@ export default function ProjectPage() {
   };
 
   useEffect(() => {
-    console.log("useEffect: Memulai fetch projects...");
     fetchProjects();
   }, []);
 
   const handleAdminLogin = () => {
-    console.log("Mencoba login admin dengan password:", adminPassword);
     if (adminPassword === ADMIN_PASSWORD) {
       setIsAdminMode(true);
       setShowAdminLogin(false);
@@ -109,10 +110,8 @@ export default function ProjectPage() {
       alert("Isi semua kolom yang wajib!");
       return;
     }
-
     try {
       setUploading(true);
-
       const projectData = {
         name: formData.name,
         description: formData.description,
@@ -124,22 +123,14 @@ export default function ProjectPage() {
         status: formData.status,
         createdAt: editingProject?.createdAt || serverTimestamp(),
       };
-
       if (editingProject) {
         await updateDoc(doc(db, "projects", editingProject.id), projectData);
-        console.log("Project updated");
       } else {
         await addDoc(collection(db, "projects"), projectData);
-        console.log("Project added");
       }
-
       resetForm();
       await fetchProjects();
-      alert(
-        editingProject
-          ? "Project berhasil diupdate!"
-          : "Project berhasil ditambah!"
-      );
+      alert(editingProject ? "Project berhasil diupdate!" : "Project berhasil ditambah!");
     } catch (error: any) {
       console.error("Error:", error);
       alert(`Gagal: ${error.message}`);
@@ -150,21 +141,17 @@ export default function ProjectPage() {
 
   const handleDelete = async (project: Project) => {
     if (!confirm(`Hapus project "${project.name}"?`)) return;
-
     try {
-      console.log("Menghapus project:", project.id);
       await deleteDoc(doc(db, "projects", project.id));
-      console.log("Project dihapus dari Firestore");
       fetchProjects();
       alert("Project berhasil dihapus!");
     } catch (error: any) {
-      console.error("Gagal menghapus project:", error.message, error.code);
+      console.error("Gagal menghapus project:", error.message);
       alert("Gagal menghapus project.");
     }
   };
 
   const handleEdit = (project: Project) => {
-    console.log("Mengedit project:", project.id);
     setEditingProject(project);
     setFormData({
       name: project.name,
@@ -180,7 +167,6 @@ export default function ProjectPage() {
   };
 
   const resetForm = () => {
-    console.log("Reset form...");
     setFormData({
       name: "",
       description: "",
@@ -204,18 +190,22 @@ export default function ProjectPage() {
 
   return (
     <main className="min-h-screen bg-gray-950 relative overflow-hidden">
-      {/* Background */}
+      {/* Background - Simplified di mobile */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-blue-950/30" />
-        <div className="absolute top-20 left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        {!isMobile && (
+          <>
+            <div className="absolute top-20 left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          </>
+        )}
       </div>
 
       {/* Admin Button */}
       {!isAdminMode && (
         <button
           onClick={() => setShowAdminLogin(!showAdminLogin)}
-          className="fixed top-4 right-4 bg-gray-800/80 backdrop-blur-xl border border-gray-700 rounded-full p-3 hover:bg-gray-700/80 transition-all z-50 hover:scale-110"
+          className="fixed top-4 right-4 bg-gray-800/80 backdrop-blur-xl border border-gray-700 rounded-full p-3 hover:bg-gray-700/80 transition-all z-50"
         >
           <Lock className="w-5 h-5 text-gray-300" />
         </button>
@@ -223,7 +213,7 @@ export default function ProjectPage() {
 
       {/* Admin Login Modal */}
       {showAdminLogin && (
-        <div className="fixed top-20 right-4 bg-gray-900/95 backdrop-blur-xl border-2 border-gray-700 rounded-2xl p-6 shadow-2xl z-50 w-72 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fixed top-20 right-4 bg-gray-900/95 backdrop-blur-xl border-2 border-gray-700 rounded-2xl p-6 shadow-2xl z-50 w-72">
           <h3 className="text-white font-bold mb-4">Admin Login</h3>
           <input
             type="password"
@@ -245,12 +235,12 @@ export default function ProjectPage() {
       {/* Add/Edit Modal */}
       {showAddModal && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={resetForm}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-gray-900/95 backdrop-blur-xl border-2 border-gray-700 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200"
+            className="bg-gray-900/95 backdrop-blur-xl border-2 border-gray-700 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
@@ -260,7 +250,6 @@ export default function ProjectPage() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
@@ -274,7 +263,6 @@ export default function ProjectPage() {
                   placeholder="Contoh: E-Commerce Platform"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Deskripsi *
@@ -287,7 +275,6 @@ export default function ProjectPage() {
                   placeholder="Deskripsi lengkap tentang project ini..."
                 />
               </div>
-
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Technologies (pisahkan dengan koma) *
@@ -300,7 +287,6 @@ export default function ProjectPage() {
                   placeholder="React, Node.js, MongoDB, Tailwind"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   URL Project *
@@ -313,7 +299,6 @@ export default function ProjectPage() {
                   placeholder="https://your-project.com"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   GitHub URL (Opsional)
@@ -326,7 +311,6 @@ export default function ProjectPage() {
                   placeholder="https://github.com/username/repo"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   URL Gambar Preview (Opsional)
@@ -338,11 +322,7 @@ export default function ProjectPage() {
                   className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
                   placeholder="https://example.com/preview.jpg"
                 />
-                <p className="text-gray-500 text-xs mt-1">
-                  Masukkan URL gambar untuk preview project
-                </p>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">
@@ -355,7 +335,6 @@ export default function ProjectPage() {
                     className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
                   />
                 </div>
-
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">
                     Status *
@@ -372,7 +351,6 @@ export default function ProjectPage() {
                   </select>
                 </div>
               </div>
-
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleSubmit}
@@ -405,22 +383,22 @@ export default function ProjectPage() {
 
       <div className="relative z-10 px-4 py-16 md:py-24 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             My Projects
           </h1>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto mb-6"></div>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              A collection of my personal and professional projects — built to learn, explore new ideas, and solve real problems through modern technology.
+          <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto mb-6"></div>
+          <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
+            A collection of my personal and professional projects — built to learn, explore new ideas, and solve real problems through modern technology.
           </p>
         </div>
 
         {/* Admin Controls */}
         {isAdminMode && (
-          <div className="mb-8 flex flex-wrap gap-3 justify-center animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="mb-8 flex flex-wrap gap-3 justify-center">
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 shadow-lg hover:scale-105"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 shadow-lg"
             >
               <Plus className="w-5 h-5" />
               Tambah Project
@@ -459,18 +437,22 @@ export default function ProjectPage() {
             {projects.map((project, index) => (
               <div
                 key={project.id}
-                className="group relative animate-in fade-in zoom-in-95 duration-500"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 blur-xl group-hover:blur-2xl opacity-50 group-hover:opacity-70 transition-all rounded-3xl" />
-                <div className="relative bg-gray-900/80 backdrop-blur-xl rounded-3xl border-2 border-gray-800 hover:border-gray-700 transition-all h-full flex flex-col overflow-hidden group-hover:-translate-y-2 duration-300">
+                {/* Simplified glow - disabled di mobile */}
+                {!isMobile && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 blur-xl group-hover:blur-2xl opacity-50 group-hover:opacity-70 transition-all rounded-3xl" />
+                )}
+                
+                <div className={`relative bg-gray-900/80 backdrop-blur-xl rounded-3xl border-2 border-gray-800 hover:border-gray-700 transition-all h-full flex flex-col overflow-hidden ${!isMobile ? 'group-hover:-translate-y-2 duration-300' : ''}`}>
                   {/* Project Image */}
                   <div className="relative w-full h-48 bg-gray-800 overflow-hidden">
                     {project.imageUrl ? (
                       <img
                         src={project.imageUrl}
                         alt={project.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className={`w-full h-full object-cover ${!isMobile ? 'group-hover:scale-110 transition-transform duration-500' : ''}`}
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">

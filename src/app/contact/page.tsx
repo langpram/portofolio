@@ -92,7 +92,7 @@ export default function ContactPage() {
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/6281234567890",
+      href: "https://wa.me/6287762101910",
       color: "from-green-500 to-green-600",
       hoverColor: "hover:shadow-green-500/50",
       bgColor: "bg-green-500/10",
@@ -101,7 +101,7 @@ export default function ContactPage() {
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://instagram.com/yourusername",
+      href: "https://instagram.com/langpram_",
       color: "from-pink-500 via-purple-500 to-orange-500",
       hoverColor: "hover:shadow-pink-500/50",
       bgColor: "bg-pink-500/10",
@@ -110,7 +110,7 @@ export default function ContactPage() {
     {
       name: "GitHub",
       icon: Github,
-      href: "https://github.com/yourusername",
+      href: "https://github.com/langpram",
       color: "from-gray-700 to-gray-900",
       hoverColor: "hover:shadow-gray-500/50",
       bgColor: "bg-gray-500/10",
@@ -119,7 +119,7 @@ export default function ContactPage() {
     {
       name: "LinkedIn",
       icon: Linkedin,
-      href: "https://linkedin.com/in/yourusername",
+      href: "www.linkedin.com/in/bambang-lang-prihambodo-b4b697313",
       color: "from-blue-600 to-blue-700",
       hoverColor: "hover:shadow-blue-500/50",
       bgColor: "bg-blue-500/10",
@@ -128,7 +128,7 @@ export default function ContactPage() {
     {
       name: "Email",
       icon: Mail,
-      href: "mailto:your.email@example.com",
+      href: "mailto:bambang.career@gmail.com",
       color: "from-red-500 to-red-600",
       hoverColor: "hover:shadow-red-500/50",
       bgColor: "bg-red-500/10",

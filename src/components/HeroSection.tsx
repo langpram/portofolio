@@ -2,32 +2,30 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
+  const [isMobile, setIsMobile] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const photoRef = useRef<HTMLDivElement>(null);
 
-  // Smooth mouse tracking for 3D tilt
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  const smoothMouseX = useSpring(mouseX, { damping: 25, stiffness: 200 });
-  const smoothMouseY = useSpring(mouseY, { damping: 25, stiffness: 200 });
-
-  // 3D tilt effect (subtle)
-  const rotateX = useTransform(smoothMouseY, [-200, 200], [8, -8]);
-  const rotateY = useTransform(smoothMouseX, [-200, 200], [-8, 8]);
-
+  // Deteksi mobile
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Mouse tracking HANYA di desktop
+  useEffect(() => {
+    if (isMobile) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (photoRef.current) {
         const rect = photoRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        
-        mouseX.set(e.clientX - centerX);
-        mouseY.set(e.clientY - centerY);
         
         setMousePosition({
           x: (e.clientX - centerX) / 30,
@@ -38,152 +36,109 @@ export default function HeroSection() {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [isMobile]);
 
   return (
     <section
       id="home"
       className="relative flex items-center justify-center min-h-screen bg-gray-900 overflow-hidden rounded-3xl mx-2 sm:mx-4 mt-2 sm:mt-4 mb-2 sm:mb-4 py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8"
     >
-      {/* Animated Background Gradient */}
+      {/* Simplified Background - Hapus animasi di mobile */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-850 to-gray-900 rounded-3xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_50%)] rounded-3xl" />
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden rounded-3xl">
-          <motion.div
-            className="absolute w-2 h-2 bg-purple-500/30 rounded-full"
-            animate={{
-              x: [0, 100, 0],
-              y: [0, -100, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            style={{ top: "20%", left: "10%" }}
-          />
-          <motion.div
-            className="absolute w-3 h-3 bg-pink-500/20 rounded-full"
-            animate={{
-              x: [0, -80, 0],
-              y: [0, 120, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-            style={{ top: "60%", right: "15%" }}
-          />
-          <motion.div
-            className="absolute w-2 h-2 bg-blue-500/25 rounded-full"
-            animate={{
-              x: [0, -60, 0],
-              y: [0, -80, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 9,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 4,
-            }}
-            style={{ bottom: "30%", left: "20%" }}
-          />
-        </div>
+        
+        {/* Floating particles - HANYA di desktop */}
+        {!isMobile && (
+          <div className="absolute inset-0 overflow-hidden rounded-3xl">
+            <motion.div
+              className="absolute w-2 h-2 bg-purple-500/30 rounded-full"
+              animate={{ x: [0, 100, 0], y: [0, -100, 0], opacity: [0, 1, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              style={{ top: "20%", left: "10%" }}
+            />
+            <motion.div
+              className="absolute w-3 h-3 bg-pink-500/20 rounded-full"
+              animate={{ x: [0, -80, 0], y: [0, 120, 0], opacity: [0, 1, 0] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              style={{ top: "60%", right: "15%" }}
+            />
+            <motion.div
+              className="absolute w-2 h-2 bg-blue-500/25 rounded-full"
+              animate={{ x: [0, -60, 0], y: [0, -80, 0], opacity: [0, 1, 0] }}
+              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+              style={{ bottom: "30%", left: "20%" }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Content Container */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row items-center gap-8 md:gap-12">
         
-        {/* Left Side - Photo with 3D Tilt */}
+        {/* Left Side - Photo (3D HANYA di desktop) */}
         <motion.div
           ref={photoRef}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
           className="flex-shrink-0 relative"
-          style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
-          }}
+          // 3D transform HANYA di desktop
+          style={!isMobile ? {
+            transform: `perspective(1000px) rotateX(${mousePosition.y * -0.5}deg) rotateY(${mousePosition.x * 0.5}deg)`,
+            transition: 'transform 0.1s ease-out'
+          } : {}}
         >
           <div className="relative w-56 h-72 sm:w-64 sm:h-80 md:w-72 md:h-96 group">
-            {/* Static Border Effect */}
-            <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 rounded-2xl opacity-60 group-hover:opacity-80 blur-sm transition-opacity duration-500" />
+            {/* Simplified Border - Hapus blur di mobile */}
+            <div className={`absolute -inset-0.5 bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 rounded-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500 ${isMobile ? '' : 'blur-sm'}`} />
             
-            {/* Glow Effect */}
-            <div className="absolute -inset-4 bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-500 opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-500" />
+            {/* Glow - Hapus di mobile */}
+            {!isMobile && (
+              <div className="absolute -inset-4 bg-gradient-to-br from-blue-500 via-cyan-500 to-purple-500 opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-500" />
+            )}
             
             {/* Photo Container */}
-            <div 
-              className="relative w-full h-full rounded-2xl overflow-hidden"
-              style={{
-                transform: "translateZ(20px)",
-                transformStyle: "preserve-3d",
-              }}
-            >
+            <div className="relative w-full h-full rounded-2xl overflow-hidden">
               <Image
                 src="/assets/pro.png"
                 alt="Bambang Lang Prihambodo"
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 priority
+                // Optimasi image untuk mobile
+                sizes="(max-width: 768px) 224px, 288px"
               />
-              {/* Bottom Gradient Fade */}
               <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
             </div>
 
-            {/* Floating Stats Card - Projects */}
-            <motion.div
+            {/* Floating Cards - Simplified di mobile */}
+            <div
               className="absolute -bottom-3 -left-3 bg-gray-900/95 backdrop-blur-xl border border-cyan-500/50 rounded-xl px-3 py-2 shadow-2xl shadow-cyan-500/20"
-              style={{
-                x: mousePosition.x * -1,
-                y: mousePosition.y * -1,
-                transform: "translateZ(50px)",
-                transformStyle: "preserve-3d",
-              }}
-              whileHover={{ scale: 1.05 }}
+              style={!isMobile ? {
+                transform: `translate(${mousePosition.x * -1}px, ${mousePosition.y * -1}px)`,
+                transition: 'transform 0.1s ease-out'
+              } : {}}
             >
               <div className="text-cyan-400 text-xl font-bold">GOAT AURA</div>
               <div className="text-gray-400 text-xs">in Progress</div>
-            </motion.div>
+            </div>
 
-            {/* Floating Stats Card - Experience */}
-            <motion.div
+            <div
               className="absolute -top-3 -right-3 bg-gray-900/95 backdrop-blur-xl border border-purple-500/50 rounded-xl px-3 py-2 shadow-2xl shadow-purple-500/20"
-              style={{
-                x: mousePosition.x * 1,
-                y: mousePosition.y * 1,
-                transform: "translateZ(50px)",
-                transformStyle: "preserve-3d",
-              }}
-              whileHover={{ scale: 1.05 }}
+              style={!isMobile ? {
+                transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+                transition: 'transform 0.1s ease-out'
+              } : {}}
             >
               <div className="text-purple-400 text-xl font-bold">1+</div>
               <div className="text-gray-400 text-xs">Years</div>
-            </motion.div>
+            </div>
 
-            {/* Online Status Badge */}
+            {/* Online Badge - Simplified animation */}
             <motion.div
               className="absolute top-3 left-3 bg-gray-900/95 backdrop-blur-xl border border-green-500/50 rounded-full px-3 py-1.5 shadow-lg flex items-center gap-2"
-              style={{
-                transform: "translateZ(40px)",
-                transformStyle: "preserve-3d",
-              }}
-              animate={{
-                y: [0, -5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              animate={!isMobile ? { y: [0, -5, 0] } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-green-400 text-xs font-medium">Available</span>
@@ -268,7 +223,7 @@ export default function HeroSection() {
             className="flex gap-3"
           >
             <motion.a
-              href="www.linkedin.com/in/bambang-lang-prihambodo-b4b697313"
+              href="https://linkedin.com/in/bambang-lang-prihambodo-b4b697313"
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 rounded-lg bg-[#0077B5] text-white hover:bg-[#006399] transition-all duration-300"

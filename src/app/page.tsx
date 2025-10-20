@@ -1,77 +1,72 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import HeroSection from "@/components/HeroSection";
-import { Code2, Network, Server, Wrench, Award, Clock, Coffee, Zap } from "lucide-react";
+import { Code2, Network, Server, Wrench } from "lucide-react";
 
 export default function BerandaPage() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-950 relative overflow-hidden">
-      {/* Floating Background Orbs */}
-      <div className="fixed inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-20 right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.5, 0.3, 0.5],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+      {/* Simplified Background - Static di mobile */}
+      {!isMobile && (
+        <div className="fixed inset-0 pointer-events-none">
+          <motion.div
+            className="absolute top-20 right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-20 left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"
+            animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+      )}
 
       {/* Hero Section */}
       <HeroSection />
 
-      {/* About Me Section - Interactive Stats Showcase */}
+      {/* About Me Section */}
       <section className="relative px-4 py-16 md:py-24">
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               About Me
             </h2>
-            <div className="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
           </motion.div>
 
-          {/* About Text - Glassmorphic Card */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl" />
-            <div className="relative bg-gray-900/60 backdrop-blur-2xl rounded-3xl p-8 md:p-12 border border-gray-800/50 shadow-2xl">
-              <div className="space-y-6">
-                <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+            <div className="relative bg-gray-900/60 backdrop-blur-xl rounded-3xl p-6 md:p-10 border border-gray-800/50 shadow-xl">
+              <div className="space-y-5">
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                   Hi there! I'm an <span className="text-cyan-400 font-semibold">Informatics student</span> at Bina Sarana Informatika University with a background in <span className="text-purple-400 font-semibold">Computer Network Engineering</span>. This gives me a unique perspective - bridging software development with network infrastructure.
                 </p>
-                <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                   Currently grinding as <span className="text-blue-400 font-semibold">IT Support at PT Hernadhi Jaya Abadi</span>, I've developed practical skills in troubleshooting, network setup, and IT infrastructure maintenance. My expertise extends from building and managing websites with modern frameworks and WordPress, to configuring and optimizing network systems for reliability and performance.
                 </p>
-                <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                   My goal? Becoming a <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-bold">Network Engineer or Cloud Infrastructure specialist</span> who can automate all the things and build scalable solutions that actually make sense! 🚀
                 </p>
               </div>
@@ -80,23 +75,22 @@ export default function BerandaPage() {
         </div>
       </section>
 
-      {/* What I Do Section - Bento Grid */}
+      {/* What I Do Section */}
       <section className="relative px-4 py-16 md:py-24">
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               What I Do
             </h2>
-            <div className="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
           </motion.div>
 
-          {/* Bento Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
@@ -130,24 +124,18 @@ export default function BerandaPage() {
             ].map((service, index) => (
               <motion.div
                 key={service.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 className={`group relative ${service.span}`}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-10 blur-xl group-hover:opacity-20 transition-opacity rounded-3xl`} />
-                <div className="relative bg-gray-900/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-gray-800 hover:border-gray-700 transition-all duration-300 h-full">
-                  <motion.div
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 shadow-lg`}
-                  >
-                    <service.icon className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-3">{service.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{service.description}</p>
+                <div className="relative bg-gray-900/80 backdrop-blur-xl rounded-2xl p-5 md:p-7 border border-gray-800 hover:border-gray-700 transition-all duration-300 h-full">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 shadow-lg transition-transform duration-300 ${!isMobile ? 'group-hover:scale-110' : ''}`}>
+                    <service.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2">{service.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -155,41 +143,41 @@ export default function BerandaPage() {
         </div>
       </section>
 
-      {/* Skills Section - IMPROVED! */}
+      {/* Skills Section - OPTIMIZED */}
       <section className="relative px-4 py-16 md:py-24">
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Skills & Tech Stack
             </h2>
-            <div className="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
           </motion.div>
 
-          {/* Development Skills - BIGGER & SLOWER */}
+          {/* Development Skills - Slower & conditional animation */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-12"
           >
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3 justify-center">
-              <Code2 className="w-7 h-7 text-blue-400" />
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3 justify-center">
+              <Code2 className="w-6 h-6 text-blue-400" />
               Development & Programming
             </h3>
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-950/40 via-gray-900/60 to-purple-950/40 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-blue-500/20 shadow-2xl">
-              {/* Reduced fade edges */}
-              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-900/90 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900/90 to-transparent z-10 pointer-events-none"></div>
+            <div className="relative overflow-hidden bg-gradient-to-br from-blue-950/30 via-gray-900/50 to-purple-950/30 backdrop-blur-xl rounded-2xl p-6 md:p-10 border border-blue-500/20 shadow-xl">
+              {/* Fade edges - reduced */}
+              <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-900 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-900 to-transparent z-10 pointer-events-none"></div>
 
-              <div className="flex gap-6 md:gap-8 animate-scroll-dev">
-                {[...Array(3)].map((_, setIndex) => (
+              <div className={`flex gap-5 md:gap-7 ${isMobile ? 'animate-scroll-dev-mobile' : 'animate-scroll-dev'}`}>
+                {[...Array(2)].map((_, setIndex) => (
                   <React.Fragment key={setIndex}>
                     {[
                       { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/white", color: "from-gray-700 to-gray-900" },
@@ -207,16 +195,17 @@ export default function BerandaPage() {
                     ].map((tech, index) => (
                       <div
                         key={`${tech.name}-${setIndex}-${index}`}
-                        className="flex-shrink-0 flex flex-col items-center gap-3 group cursor-pointer"
+                        className="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer"
                       >
-                        <motion.div
-                          whileHover={{ scale: 1.15, rotate: 5 }}
-                          className={`relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center bg-gradient-to-br ${tech.color} rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-300 backdrop-blur-sm border border-white/20`}
-                        >
-                          <img src={tech.logo} alt={tech.name} className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-2xl" />
-                          <div className="absolute inset-0 bg-white/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        </motion.div>
-                        <span className="text-gray-400 text-sm md:text-base font-semibold group-hover:text-white transition-colors">
+                        <div className={`relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-gradient-to-br ${tech.color} rounded-2xl shadow-xl transition-transform duration-300 backdrop-blur-sm border border-white/10 ${!isMobile ? 'group-hover:scale-110' : ''}`}>
+                          <img 
+                            src={tech.logo} 
+                            alt={tech.name} 
+                            className="w-10 h-10 md:w-12 md:h-12 object-contain" 
+                            loading="lazy"
+                          />
+                        </div>
+                        <span className="text-gray-400 text-xs md:text-sm font-medium group-hover:text-white transition-colors">
                           {tech.name}
                         </span>
                       </div>
@@ -227,24 +216,24 @@ export default function BerandaPage() {
             </div>
           </motion.div>
 
-          {/* Network Skills - BIGGER & SLOWER */}
+          {/* Network Skills - Slower & conditional animation */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.3 }}
             className="mb-12"
           >
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3 justify-center">
-              <Network className="w-7 h-7 text-purple-400" />
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3 justify-center">
+              <Network className="w-6 h-6 text-purple-400" />
               Network & Infrastructure
             </h3>
-            <div className="relative overflow-hidden bg-gradient-to-br from-purple-950/40 via-gray-900/60 to-pink-950/40 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-purple-500/20 shadow-2xl">
-              {/* Reduced fade edges */}
-              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-900/90 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-900/90 to-transparent z-10 pointer-events-none"></div>
+            <div className="relative overflow-hidden bg-gradient-to-br from-purple-950/30 via-gray-900/50 to-pink-950/30 backdrop-blur-xl rounded-2xl p-6 md:p-10 border border-purple-500/20 shadow-xl">
+              {/* Fade edges - reduced */}
+              <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-900 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-900 to-transparent z-10 pointer-events-none"></div>
 
-              <div className="flex gap-6 md:gap-8 animate-scroll-network">
+              <div className={`flex gap-5 md:gap-7 ${isMobile ? 'animate-scroll-network-mobile' : 'animate-scroll-network'}`}>
                 {[...Array(3)].map((_, setIndex) => (
                   <React.Fragment key={setIndex}>
                     {[
@@ -257,16 +246,17 @@ export default function BerandaPage() {
                     ].map((tech, index) => (
                       <div
                         key={`${tech.name}-${setIndex}-${index}`}
-                        className="flex-shrink-0 flex flex-col items-center gap-3 group cursor-pointer"
+                        className="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer"
                       >
-                        <motion.div
-                          whileHover={{ scale: 1.15, rotate: -5 }}
-                          className={`relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center bg-gradient-to-br ${tech.color} rounded-3xl shadow-2xl group-hover:shadow-3xl transition-all duration-300 backdrop-blur-sm border border-white/20`}
-                        >
-                          <img src={tech.logo} alt={tech.name} className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-2xl" />
-                          <div className="absolute inset-0 bg-white/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        </motion.div>
-                        <span className="text-gray-400 text-sm md:text-base font-semibold group-hover:text-white transition-colors">
+                        <div className={`relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-gradient-to-br ${tech.color} rounded-2xl shadow-xl transition-transform duration-300 backdrop-blur-sm border border-white/10 ${!isMobile ? 'group-hover:scale-110' : ''}`}>
+                          <img 
+                            src={tech.logo} 
+                            alt={tech.name} 
+                            className="w-10 h-10 md:w-12 md:h-12 object-contain" 
+                            loading="lazy"
+                          />
+                        </div>
+                        <span className="text-gray-400 text-xs md:text-sm font-medium group-hover:text-white transition-colors">
                           {tech.name}
                         </span>
                       </div>
@@ -277,45 +267,43 @@ export default function BerandaPage() {
             </div>
           </motion.div>
 
-          {/* Skills Tags - Modern Pills */}
+          {/* Skills Tags */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-5"
           >
-            <div className="bg-blue-950/20 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/20">
-              <h4 className="text-lg font-bold text-blue-400 mb-4 flex items-center gap-2">
-                <Code2 className="w-5 h-5" />
+            <div className="bg-blue-950/20 backdrop-blur-xl rounded-2xl p-5 border border-blue-500/20">
+              <h4 className="text-base font-bold text-blue-400 mb-3 flex items-center gap-2">
+                <Code2 className="w-4 h-4" />
                 Development Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {["Web Development", "API Development", "Database Design", "Responsive Design", "Performance Optimization"].map((skill) => (
-                  <motion.span
+                  <span
                     key={skill}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-200 text-sm font-medium hover:bg-blue-500/20 hover:border-blue-400/50 transition-all duration-300 cursor-default"
+                    className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-200 text-xs font-medium hover:bg-blue-500/20 hover:border-blue-400/50 transition-all duration-300 cursor-default"
                   >
                     {skill}
-                  </motion.span>
+                  </span>
                 ))}
               </div>
             </div>
-            <div className="bg-purple-950/20 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
-              <h4 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
-                <Network className="w-5 h-5" />
+            <div className="bg-purple-950/20 backdrop-blur-xl rounded-2xl p-5 border border-purple-500/20">
+              <h4 className="text-base font-bold text-purple-400 mb-3 flex items-center gap-2">
+                <Network className="w-4 h-4" />
                 Network & Infrastructure
               </h4>
               <div className="flex flex-wrap gap-2">
                 {["Routing & Switching", "Subnetting", "Network Firewall", "Network Troubleshooting", "System Administration"].map((skill) => (
-                  <motion.span
+                  <span
                     key={skill}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-200 text-sm font-medium hover:bg-purple-500/20 hover:border-purple-400/50 transition-all duration-300 cursor-default"
+                    className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-200 text-xs font-medium hover:bg-purple-500/20 hover:border-purple-400/50 transition-all duration-300 cursor-default"
                   >
                     {skill}
-                  </motion.span>
+                  </span>
                 ))}
               </div>
             </div>
@@ -325,41 +313,38 @@ export default function BerandaPage() {
 
       <style jsx>{`
         @keyframes scroll-dev {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-100% / 3));
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-100% / 2)); }
         }
         @keyframes scroll-network {
-          0% {
-            transform: translateX(calc(-100% / 3));
-          }
-          100% {
-            transform: translateX(0);
-          }
+          0% { transform: translateX(calc(-100% / 3)); }
+          100% { transform: translateX(0); }
         }
+        
         .animate-scroll-dev {
-          animation: scroll-dev 60s linear infinite;
+          animation: scroll-dev 80s linear infinite;
           width: fit-content;
         }
         .animate-scroll-network {
-          animation: scroll-network 50s linear infinite;
+          animation: scroll-network 70s linear infinite;
           width: fit-content;
         }
-        .animate-scroll-dev:hover,
-        .animate-scroll-network:hover {
-          animation-play-state: paused;
+        
+        /* Mobile - SLOWER animations */
+        .animate-scroll-dev-mobile {
+          animation: scroll-dev 50s linear infinite;
+          width: fit-content;
         }
-
-        @media (max-width: 768px) {
-          .animate-scroll-dev {
-            animation-duration: 40s;
-          }
-          .animate-scroll-network {
-            animation-duration: 35s;
-          }
+        .animate-scroll-network-mobile {
+          animation: scroll-network 45s linear infinite;
+          width: fit-content;
+        }
+        
+        .animate-scroll-dev:hover,
+        .animate-scroll-network:hover,
+        .animate-scroll-dev-mobile:hover,
+        .animate-scroll-network-mobile:hover {
+          animation-play-state: paused;
         }
       `}</style>
     </main>
