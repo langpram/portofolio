@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   Sparkles,
+  Music,
 } from "lucide-react";
 
 export default function ModernNavbar() {
@@ -27,6 +28,7 @@ export default function ModernNavbar() {
       { href: "/projects", label: "Projects", icon: Briefcase },
       { href: "/certificates", label: "Certificates", icon: Award },
       { href: "/contact", label: "Contact", icon: Mail },
+      { href: "/playlist", label: "Playlist", icon: Music },
     ],
     []
   );
@@ -52,7 +54,7 @@ export default function ModernNavbar() {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 border-r border-gray-800/50 backdrop-blur-xl flex-col z-50">
-        {/* Simplified Background - kurangi kompleksitas radial gradient */}
+        {/* Simplified Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/8 rounded-full blur-3xl" />
@@ -62,7 +64,6 @@ export default function ModernNavbar() {
           {/* Profile Section */}
           <div className="mb-8">
             <div className="relative w-20 h-20 rounded-2xl overflow-hidden mb-4 group cursor-pointer">
-              {/* Remove animate-pulse, ganti jadi hover only */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-75 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute inset-[2px] rounded-[14px] overflow-hidden bg-gray-900">
                 <Image
@@ -74,7 +75,6 @@ export default function ModernNavbar() {
                   priority
                 />
               </div>
-              {/* Remove animate-pulse dari status indicator */}
               <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-2 border-gray-900" />
             </div>
 
@@ -83,7 +83,6 @@ export default function ModernNavbar() {
                 Bambang Lang
               </h1>
               <div className="flex items-center gap-2">
-                {/* Remove animate-pulse dari sparkles */}
                 <Sparkles className="w-3 h-3 text-yellow-400" />
                 <p className="text-xs text-gray-400 font-semibold">
                   Informatics • Network • Cloud
@@ -111,7 +110,6 @@ export default function ModernNavbar() {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600" />
                   )}
                   <div className="relative flex items-center gap-3 z-10">
-                    {/* Remove animate-bounce, terlalu berat */}
                     <Icon
                       className={`w-5 h-5 ${
                         isActive ? "" : "group-hover:scale-110"
@@ -163,35 +161,10 @@ export default function ModernNavbar() {
         </div>
       </aside>
 
-      {/* Mobile Header */}
+      {/* Mobile Header - UPDATED */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/50 z-50">
         <div className="h-full px-4 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-75" />
-              <div className="absolute inset-[2px] rounded-[10px] overflow-hidden bg-gray-900">
-                <Image
-                  src="/assets/pfp.jpg"
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="object-cover w-full h-full"
-                  priority
-                />
-              </div>
-            </div>
-            <div>
-              <h1 className="text-white text-sm font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                Bambang Lang
-              </h1>
-              <p className="text-[10px] text-gray-500 font-semibold">
-                Portfolio
-              </p>
-            </div>
-          </Link>
-
-          {/* Hamburger Button - tambah active:scale untuk feedback */}
+          {/* Toggle Button - PINDAH KE KIRI */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="w-10 h-10 rounded-xl bg-gray-800/50 hover:bg-gradient-to-br hover:from-blue-600 hover:to-purple-600 border border-gray-700/50 hover:border-transparent flex items-center justify-center text-gray-300 hover:text-white transition-all duration-200 active:scale-95"
@@ -199,6 +172,19 @@ export default function ModernNavbar() {
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
+
+          {/* Title - DI TENGAH */}
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <h1 className="text-white text-sm font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+              Bambang Lang
+            </h1>
+            <p className="text-[10px] text-gray-500 font-semibold text-center">
+              Portfolio
+            </p>
+          </div>
+
+          {/* Spacer - BIAR LAYOUT BALANCE & GA NABRAK GEMBOK */}
+          <div className="w-10"></div>
         </div>
       </header>
 
